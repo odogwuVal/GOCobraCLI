@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -20,20 +20,17 @@ var timezoneCmd = &cobra.Command{
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		timezone := args[0]
-		currentTime, err := getTimeInLocation(timezone)
-		if err != nil {
-			log.Fatalln("The timezone string is invalid")
-		}
-		// dateFlag, _ := cmd.Flags().GetString("date")
-		// var date string
+		location, _ := time.LoadLocation(timezone)
 
-		// if dateFlag != "" {
-		// 	date = time.Now().In(location).Format(dateFlag)
-		//    } else {
-		// 	date = time.Now().In(location).Format(time.RFC3339)[:10]
-		//    }
-		//    fmt.Printf("Current date in %v: %v\n", timezone, date)
-		fmt.Println(currentTime)
+		dateFlag, _ := cmd.Flags().GetString("date")
+		var date string
+
+		if dateFlag != "" {
+			date = time.Now().In(location).Format(dateFlag)
+		} else {
+			date = time.Now().In(location).Format(time.RFC3339)[:10]
+		}
+		fmt.Printf("Current date in %v: %v\n", timezone, date)
 	},
 }
 
@@ -45,7 +42,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// timezoneCmd.PersistentFlags().String("foo", "", "A help for foo")
-	timezoneCmd.PersistentFlags().String("date", "", "returns the date in a time zone in a specified format")
+	// timezoneCmd.PersistentFlags().String("date", "", "returns the date in a time zone in a specified format")
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// timezoneCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
